@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../AuthContext';
+import { colors } from '../styles/theme';
 
 // Screens
 import SignInScreen from '../screens/SignInScreen';
@@ -41,9 +42,9 @@ const AppNavigator = () => {
               options={({ route }) => ({ 
                 title: route.params?.item ? 'Edit Item' : 'Add New Item',
                 headerStyle: {
-                  backgroundColor: '#2E86C1',
+                  backgroundColor: colors.background.primary
                 },
-                headerTintColor: '#fff',
+                headerTintColor: colors.background.card,
               })}
             />
           </>
