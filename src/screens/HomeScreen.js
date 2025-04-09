@@ -19,6 +19,13 @@ const HomeScreen = ({ navigation }) => {
       
       <TouchableOpacity 
         style={styles.button}
+        onPress={() => navigation.navigate('Items')}
+      >
+        <Text style={styles.buttonText}>View My Items</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity 
+        style={styles.button}
         onPress={() => navigation.navigate('Profile')}
       >
         <Text style={styles.buttonText}>View Profile</Text>

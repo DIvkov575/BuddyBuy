@@ -8,6 +8,8 @@ import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import ItemsScreen from '../screens/ItemsScreen';
+import AddItemScreen from '../screens/AddItemScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,8 +27,24 @@ const AppNavigator = () => {
         {user ? (
           // Authenticated screens
           <>
-            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen 
+              name="Home" 
+              component={HomeScreen} 
+              options={{ title: 'BuddyBuy' }}
+            />
             <Stack.Screen name="Profile" component={ProfileScreen} />
+            <Stack.Screen 
+              name="Items" 
+              component={ItemsScreen} 
+              options={{ title: 'My Items' }}
+            />
+            <Stack.Screen 
+              name="AddItem" 
+              component={AddItemScreen} 
+              options={({ route }) => ({ 
+                title: route.params?.item ? 'Edit Item' : 'Add New Item' 
+              })}
+            />
           </>
         ) : (
           // Auth screens
