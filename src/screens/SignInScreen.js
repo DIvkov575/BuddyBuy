@@ -1,44 +1,33 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../AuthContext';
 
-const SignUpScreen = ({ navigation }) => {
+const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { signUp } = useAuth();
+  const { signIn } = useAuth();
 
-  const handleSignUp = async () => {
-    if (!email || !password || !confirmPassword) {
-      alert('Please fill in all fields');
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-    
-    if (password.length < 6) {
-      alert('Password must be at least 6 characters long');
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      alert('Please enter both email and password');
       return;
     }
     
     setIsLoading(true);
-    const success = await signUp(email, password);
+    const success = await signIn(email, password);
     setIsLoading(false);
     
-    if (success) {
-      alert('Registration successful! Please check your email to confirm your account.');
-      navigation.navigate('SignIn');
+    if (!success) {
+      // Auth context already shows error alert
+      return;
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
+      <Text style={styles.title}>Welcome Back</Text>
       
       <TextInput
         style={styles.input}
@@ -57,31 +46,23 @@ const SignUpScreen = ({ navigation }) => {
         secureTextEntry
       />
       
-      <TextInput
-        style={styles.input}
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-      />
-      
       <TouchableOpacity 
         style={styles.button} 
-        onPress={handleSignUp}
+        onPress={handleSignIn}
         disabled={isLoading}
       >
         {isLoading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>Sign Up</Text>
+          <Text style={styles.buttonText}>Sign In</Text>
         )}
       </TouchableOpacity>
       
       <TouchableOpacity 
         style={styles.linkContainer}
-        onPress={() => navigation.navigate('SignIn')}
+        onPress={() => navigation.navigate('SignUp')}
       >
-        <Text style={styles.link}>Already have an account? Sign In</Text>
+        <Text style={styles.link}>Don't have an account? Sign Up</Text>
       </TouchableOpacity>
     </View>
   );
@@ -126,4 +107,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUpScreen;
+export default SignInScreen;

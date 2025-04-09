@@ -1,7 +1,7 @@
 import 'react-native-url-polyfill/auto';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider } from './AuthContext';
 import AppNavigator from './navigation/AppNavigator';
 
 export default function App() {
