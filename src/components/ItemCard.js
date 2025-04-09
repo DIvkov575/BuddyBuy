@@ -9,19 +9,19 @@ const RatingIndicator = ({ rating }) => {
       return {
         icon: theme.ratingConfig.good.icon,
         color: theme.ratingConfig.good.color,
-        label: theme.ratingConfig.good.label
+        label: 'Good'
       };
     } else if (rating === 2) {
       return {
         icon: theme.ratingConfig.neutral.icon,
         color: theme.ratingConfig.neutral.color,
-        label: theme.ratingConfig.neutral.label
+        label: 'Neutral'
       };
     } else {
       return {
         icon: theme.ratingConfig.bad.icon,
         color: theme.ratingConfig.bad.color,
-        label: theme.ratingConfig.bad.label
+        label: 'Bad'
       };
     }
   };
@@ -32,7 +32,7 @@ const RatingIndicator = ({ rating }) => {
     <View style={styles.ratingContainer}>
       <Ionicons 
         name={ratingInfo.icon} 
-        size={16} 
+        size={18} 
         color={ratingInfo.color} 
         style={styles.ratingIcon}
       />
@@ -50,89 +50,67 @@ const ItemCard = ({ item, onPress }) => {
       onPress={() => onPress(item)} 
       activeOpacity={0.7}
     >
-      <View style={styles.contentContainer}>
-        {item.imageUri ? (
-          <View style={styles.imageContainer}>
-            <Image 
-              source={{ uri: item.imageUri }} 
-              style={styles.image}
-              resizeMode="cover"
-            />
-          </View>
-        ) : (
-          <View style={styles.imagePlaceholder}>
-            <Ionicons name="image-outline" size={22} color={theme.colors.gray[400]} />
+      {item.imageUri && (
+        <Image 
+          source={{ uri: item.imageUri }} 
+          style={styles.image}
+          resizeMode="cover"
+        />
+      )}
+      
+      <View style={styles.content}>
+        <View style={styles.titleRow}>
+          <Text style={styles.title}>{item.title}</Text>
+        </View>
+        
+        <RatingIndicator rating={item.rating} />
+        
+        <Text style={styles.description} numberOfLines={2}>
+          {item.description}
+        </Text>
+        
+        {!item.synced && (
+          <View style={styles.syncBadge}>
+            <Text style={styles.syncText}>Syncing...</Text>
           </View>
         )}
-        
-        <View style={styles.content}>
-          <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
-          
-          <RatingIndicator rating={item.rating} />
-          
-          <Text style={styles.description} numberOfLines={2}>
-            {item.description || 'No description'}
-          </Text>
-        </View>
       </View>
-      
-      {!item.synced && (
-        <View style={styles.syncBadge}>
-          <Ionicons name="sync" size={12} color={theme.colors.white} style={styles.syncIcon} />
-          <Text style={styles.syncText}>Syncing</Text>
-        </View>
-      )}
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: theme.colors.ui.card,
+    backgroundColor: theme.colors.background.card,
     borderRadius: theme.borderRadius.md,
     marginBottom: theme.spacing.md,
     ...theme.shadows.small,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  contentContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-  },
-  imageContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: theme.borderRadius.sm,
     overflow: 'hidden',
-    margin: theme.spacing.sm,
   },
   image: {
-    width: '100%',
-    height: '100%',
-  },
-  imagePlaceholder: {
-    width: 80,
-    height: 80,
-    borderRadius: theme.borderRadius.sm,
-    backgroundColor: theme.colors.gray[100],
-    margin: theme.spacing.sm,
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 100,
+    height: 100,
   },
   content: {
     flex: 1,
-    padding: theme.spacing.sm,
-    paddingLeft: 0,
-    marginRight: theme.spacing.md,
+    padding: theme.spacing.md,
   },
-  title: {
-    fontSize: theme.typography.fontSizes.lg,
-    fontWeight: theme.typography.fontWeights.semibold,
-    color: theme.colors.text.primary,
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: theme.spacing.xs,
   },
-  description: {
+  title: {
     fontSize: theme.typography.fontSizes.md,
+    fontWeight: theme.typography.fontWeights.bold,
+    color: theme.colors.text.primary,
+    flex: 1,
+    marginRight: theme.spacing.sm,
+  },
+  description: {
+    fontSize: theme.typography.fontSizes.sm,
     color: theme.colors.text.secondary,
     marginTop: theme.spacing.xs,
   },
@@ -141,7 +119,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ratingIcon: {
-    marginRight: theme.spacing.xs / 2,
+    marginRight: theme.spacing.xs,
   },
   ratingText: {
     fontSize: theme.typography.fontSizes.sm,
@@ -149,22 +127,16 @@ const styles = StyleSheet.create({
   },
   syncBadge: {
     position: 'absolute',
-    top: theme.spacing.xs,
-    right: theme.spacing.xs,
-    backgroundColor: theme.colors.primary.main,
-    borderRadius: theme.borderRadius.round,
+    right: 5,
+    bottom: 5,
+    backgroundColor: theme.colors.secondary,
     paddingHorizontal: theme.spacing.sm,
     paddingVertical: theme.spacing.xs / 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  syncIcon: {
-    marginRight: theme.spacing.xs / 2,
+    borderRadius: theme.borderRadius.md,
   },
   syncText: {
     color: theme.colors.white,
     fontSize: theme.typography.fontSizes.xs,
-    fontWeight: theme.typography.fontWeights.medium,
   },
 });
 

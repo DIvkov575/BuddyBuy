@@ -6,41 +6,12 @@ import {
   TouchableOpacity, 
   Alert, 
   ActivityIndicator,
-  ScrollView,
-  StatusBar
+  ScrollView
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../AuthContext';
 import { useItems } from '../ItemContext';
-import GradientBackground from '../components/GradientBackground';
 import theme from '../styles/theme';
-
-const ActionButton = ({ icon, title, onPress, type = 'primary', disabled = false }) => {
-  const buttonStyle = type === 'primary' 
-    ? styles.actionButton 
-    : [styles.actionButton, styles.dangerButton];
-  
-  return (
-    <TouchableOpacity
-      style={[buttonStyle, disabled && styles.disabledButton]}
-      onPress={onPress}
-      disabled={disabled}
-    >
-      <Ionicons name={icon} size={22} color={theme.colors.white} style={styles.actionIcon} />
-      <Text style={styles.actionText}>{title}</Text>
-    </TouchableOpacity>
-  );
-};
-
-const StatCard = ({ icon, value, label }) => {
-  return (
-    <View style={styles.statCard}>
-      <Ionicons name={icon} size={24} color={theme.colors.primary.main} style={styles.statIcon} />
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
-  );
-};
 
 const ProfileScreen = ({ navigation }) => {
   const { user, signOut } = useAuth();
@@ -93,188 +64,138 @@ const ProfileScreen = ({ navigation }) => {
     }
   };
 
-  const pendingSyncCount = items.filter(item => !item.synced).length;
-
   return (
-    <GradientBackground>
-      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
-      
+    <ScrollView style={styles.container}>
       {loading && (
         <View style={theme.commonStyles.loadingOverlay}>
-          <ActivityIndicator size="large" color={theme.colors.white} />
+          <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
       )}
       
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-            hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
-          >
-            <Ionicons name="arrow-back" size={24} color={theme.colors.white} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Profile</Text>
-          <View style={{ width: 24 }} />
+      <View style={styles.header}>
+        <Ionicons name="person-circle" size={80} color={theme.colors.primary} />
+        <Text style={styles.title}>Profile</Text>
+      </View>
+      
+      <View style={styles.infoCard}>
+        <View style={styles.profileInfo}>
+          <Text style={styles.label}>Email</Text>
+          <Text style={styles.value}>{user?.email}</Text>
         </View>
         
-        <ScrollView 
-          style={styles.content}
-          contentContainerStyle={styles.contentContainer}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.profileHeader}>
-            <View style={styles.avatarContainer}>
-              <Ionicons name="person" size={40} color={theme.colors.white} />
-            </View>
-            <Text style={styles.userName}>{user?.email}</Text>
-            <Text style={styles.userId}>ID: {user?.id?.substring(0, 8)}...</Text>
+        <View style={styles.profileInfo}>
+          <Text style={styles.label}>User ID</Text>
+          <Text style={styles.value} numberOfLines={1}>{user?.id}</Text>
+        </View>
+        
+        <View style={styles.statsRow}>
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>{items.length}</Text>
+            <Text style={styles.statLabel}>Items</Text>
           </View>
           
-          <View style={styles.statsContainer}>
-            <StatCard 
-              icon="list" 
-              value={items.length} 
-              label="Total Items" 
-            />
-            <StatCard 
-              icon="sync" 
-              value={pendingSyncCount} 
-              label="Pending Sync" 
-            />
+          <View style={styles.statItem}>
+            <Text style={styles.statNumber}>
+              {items.filter(item => !item.synced).length}
+            </Text>
+            <Text style={styles.statLabel}>Pending Sync</Text>
           </View>
-          
-          <View style={styles.sectionTitle}>
-            <Ionicons name="settings-outline" size={20} color={theme.colors.text.primary} />
-            <Text style={styles.sectionTitleText}>Account</Text>
-          </View>
-          
-          <View style={styles.actionsContainer}>
-            <ActionButton 
-              icon="sync"
-              title="Sync with Server"
-              onPress={handleSync}
-              disabled={loading}
-            />
-            
-            <ActionButton 
-              icon="log-out"
-              title="Sign Out"
-              onPress={handleSignOut}
-              type="danger"
-              disabled={loading}
-            />
-          </View>
-          
-          <View style={styles.footer}>
-            <Text style={styles.version}>BuddyBuy v1.0.0</Text>
-            <Text style={styles.copyright}>© 2025 BuddyBuy</Text>
-          </View>
-        </ScrollView>
+        </View>
       </View>
-    </GradientBackground>
+      
+      <View style={styles.actionButtons}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={handleSync}
+        >
+          <Ionicons name="sync" size={22} color={theme.colors.white} style={styles.actionIcon} />
+          <Text style={styles.actionText}>Sync with Server</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.actionButton, styles.dangerButton]}
+          onPress={handleSignOut}
+        >
+          <Ionicons name="log-out" size={22} color={theme.colors.white} style={styles.actionIcon} />
+          <Text style={styles.actionText}>Sign Out</Text>
+        </TouchableOpacity>
+      </View>
+      
+      <TouchableOpacity 
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Ionicons name="arrow-back" size={20} color={theme.colors.primary} style={styles.backIcon} />
+        <Text style={styles.backText}>Back to Home</Text>
+      </TouchableOpacity>
+      
+      <View style={styles.footer}>
+        <Text style={styles.version}>BuddyBuy v1.0.0</Text>
+        <Text style={styles.copyright}>© 2025 BuddyBuy</Text>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    ...theme.commonStyles.scrollContainer,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: theme.spacing.md,
-    paddingTop: theme.spacing.xl + theme.spacing.lg, // For status bar
-    paddingBottom: theme.spacing.md,
+    paddingVertical: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.lg,
   },
-  headerTitle: {
-    fontSize: theme.typography.fontSizes.heading,
+  title: {
+    fontSize: theme.typography.fontSizes.xxl,
     fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.white,
-  },
-  backButton: {
-    padding: theme.spacing.xs,
-  },
-  content: {
-    flex: 1,
-    backgroundColor: theme.colors.ui.background,
-    borderTopLeftRadius: theme.borderRadius.xl,
-    borderTopRightRadius: theme.borderRadius.xl,
-    marginTop: theme.spacing.md,
-  },
-  contentContainer: {
-    padding: theme.spacing.md,
-    paddingBottom: theme.spacing.xl * 2,
-  },
-  profileHeader: {
-    alignItems: 'center',
-    marginTop: theme.spacing.xl,
-    marginBottom: theme.spacing.xl,
-  },
-  avatarContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: theme.colors.primary.main,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: theme.spacing.md,
-    ...theme.shadows.medium,
-  },
-  userName: {
-    fontSize: theme.typography.fontSizes.xl,
-    fontWeight: theme.typography.fontWeights.bold,
+    marginTop: theme.spacing.sm,
     color: theme.colors.text.primary,
-    marginBottom: theme.spacing.xs,
   },
-  userId: {
+  infoCard: {
+    ...theme.commonStyles.card,
+    marginHorizontal: theme.spacing.md,
+  },
+  profileInfo: {
+    marginBottom: theme.spacing.md,
+  },
+  label: {
     fontSize: theme.typography.fontSizes.sm,
     color: theme.colors.text.secondary,
+    marginBottom: theme.spacing.xs,
   },
-  statsContainer: {
+  value: {
+    fontSize: theme.typography.fontSizes.md,
+    fontWeight: theme.typography.fontWeights.medium,
+    color: theme.colors.text.primary,
+  },
+  statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: theme.spacing.xl,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.gray[200],
+    paddingTop: theme.spacing.lg,
+    marginTop: theme.spacing.md,
   },
-  statCard: {
-    backgroundColor: theme.colors.ui.card,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
+  statItem: {
     alignItems: 'center',
-    width: '45%',
-    ...theme.shadows.small,
   },
-  statIcon: {
-    marginBottom: theme.spacing.sm,
-  },
-  statValue: {
-    fontSize: theme.typography.fontSizes.heading,
+  statNumber: {
+    fontSize: theme.typography.fontSizes.xxl,
     fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.text.primary,
+    color: theme.colors.primary,
   },
   statLabel: {
     fontSize: theme.typography.fontSizes.sm,
     color: theme.colors.text.secondary,
     marginTop: theme.spacing.xs,
   },
-  sectionTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: theme.spacing.md,
+  actionButtons: {
+    marginHorizontal: theme.spacing.md,
     marginTop: theme.spacing.lg,
   },
-  sectionTitleText: {
-    fontSize: theme.typography.fontSizes.lg,
-    fontWeight: theme.typography.fontWeights.semibold,
-    color: theme.colors.text.primary,
-    marginLeft: theme.spacing.sm,
-  },
-  actionsContainer: {
-    marginBottom: theme.spacing.xl,
-  },
   actionButton: {
-    backgroundColor: theme.colors.primary.main,
+    backgroundColor: theme.colors.primary,
     padding: theme.spacing.md,
     borderRadius: theme.borderRadius.md,
     flexDirection: 'row',
@@ -284,22 +205,34 @@ const styles = StyleSheet.create({
     ...theme.shadows.small,
   },
   dangerButton: {
-    backgroundColor: theme.colors.status.danger,
-  },
-  disabledButton: {
-    opacity: 0.6,
+    backgroundColor: theme.colors.danger,
   },
   actionIcon: {
     marginRight: theme.spacing.sm,
   },
   actionText: {
     color: theme.colors.white,
-    fontWeight: theme.typography.fontWeights.semibold,
+    fontWeight: theme.typography.fontWeights.bold,
+    fontSize: theme.typography.fontSizes.md,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: theme.spacing.lg,
+    marginHorizontal: theme.spacing.md,
+  },
+  backIcon: {
+    marginRight: theme.spacing.xs,
+  },
+  backText: {
+    color: theme.colors.primary,
     fontSize: theme.typography.fontSizes.md,
   },
   footer: {
+    marginTop: theme.spacing.xxl,
+    marginBottom: theme.spacing.xl,
     alignItems: 'center',
-    marginTop: theme.spacing.xl,
   },
   version: {
     fontSize: theme.typography.fontSizes.sm,
