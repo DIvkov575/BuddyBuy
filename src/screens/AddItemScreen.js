@@ -13,6 +13,42 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { useItems } from '../ItemContext';
+import theme from '../styles/theme';
+
+const RatingSelector = ({ rating, setRating }) => {
+  const options = [
+    { value: 1, label: 'Bad', icon: 'thumbs-down', color: theme.colors.danger },
+    { value: 2, label: 'Neutral', icon: 'remove', color: theme.colors.gray[500] },
+    { value: 3, label: 'Good', icon: 'thumbs-up', color: theme.colors.success },
+  ];
+
+  return (
+    <View style={styles.ratingSelector}>
+      {options.map(option => (
+        <TouchableOpacity 
+          key={option.value}
+          style={[
+            styles.ratingOption,
+            rating === option.value && { backgroundColor: option.color + '20' } // Add transparent background when selected
+          ]}
+          onPress={() => setRating(option.value)}
+        >
+          <Ionicons 
+            name={option.icon} 
+            size={28} 
+            color={rating === option.value ? option.color : theme.colors.gray[400]} 
+          />
+          <Text style={[
+            styles.ratingLabel,
+            rating === option.value && { color: option.color, fontWeight: theme.typography.fontWeights.bold }
+          ]}>
+            {option.label}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
 
 const AddItemScreen = ({ navigation, route }) => {
   const { addItem, updateItem, deleteItem } = useItems();
@@ -85,6 +121,11 @@ const AddItemScreen = ({ navigation, route }) => {
       return;
     }
 
+    if (rating === 0) {
+      Alert.alert('Error', 'Please select a rating for your item.');
+      return;
+    }
+
     try {
       setLoading(true);
       
@@ -148,8 +189,8 @@ const AddItemScreen = ({ navigation, route }) => {
   return (
     <ScrollView style={styles.container}>
       {loading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#3498DB" />
+        <View style={theme.commonStyles.loadingOverlay}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
       )}
       
@@ -179,32 +220,18 @@ const AddItemScreen = ({ navigation, route }) => {
       
       <View style={styles.formGroup}>
         <Text style={styles.label}>Rating</Text>
-        <View style={styles.ratingContainer}>
-          {[1, 2, 3].map(star => (
-            <TouchableOpacity 
-              key={star}
-              onPress={() => setRating(star)}
-              style={styles.starButton}
-            >
-              <Text 
-                style={[styles.star, star <= rating ? styles.filled : styles.empty]}
-              >
-                ★
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <RatingSelector rating={rating} setRating={setRating} />
       </View>
       
       <View style={styles.formGroup}>
         <Text style={styles.label}>Image</Text>
         <View style={styles.imageOptions}>
           <TouchableOpacity onPress={pickImage} style={styles.button}>
-            <Ionicons name="images-outline" size={18} color="#fff" style={styles.buttonIcon} />
+            <Ionicons name="images-outline" size={18} color={theme.colors.white} style={styles.buttonIcon} />
             <Text style={styles.buttonText}>Gallery</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={takePhoto} style={styles.button}>
-            <Ionicons name="camera-outline" size={18} color="#fff" style={styles.buttonIcon} />
+            <Ionicons name="camera-outline" size={18} color={theme.colors.white} style={styles.buttonIcon} />
             <Text style={styles.buttonText}>Camera</Text>
           </TouchableOpacity>
         </View>
@@ -238,7 +265,7 @@ const AddItemScreen = ({ navigation, route }) => {
           onPress={handleDelete}
           disabled={loading}
         >
-          <Ionicons name="trash-outline" size={18} color="#fff" style={styles.buttonIcon} />
+          <Ionicons name="trash-outline" size={18} color={theme.colors.white} style={styles.buttonIcon} />
           <Text style={styles.deleteButtonText}>Delete Item</Text>
         </TouchableOpacity>
       )}
@@ -249,97 +276,87 @@ const AddItemScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
-  },
-  loadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 999,
+    padding: theme.spacing.md,
+    backgroundColor: theme.colors.primary,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontSize: theme.typography.fontSizes.xxl,
+    fontWeight: theme.typography.fontWeights.bold,
+    marginBottom: theme.spacing.lg,
     textAlign: 'center',
+    color: theme.colors.text.primary,
   },
   formGroup: {
-    marginBottom: 20,
+    marginBottom: theme.spacing.lg,
   },
   label: {
-    fontSize: 16,
-    marginBottom: 8,
-    fontWeight: '600',
+    fontSize: theme.typography.fontSizes.md,
+    marginBottom: theme.spacing.sm,
+    fontWeight: theme.typography.fontWeights.semibold,
+    color: theme.colors.text.primary,
   },
   input: {
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    padding: 12,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    ...theme.commonStyles.textInput,
   },
   textArea: {
     minHeight: 100,
     textAlignVertical: 'top',
   },
-  ratingContainer: {
+  ratingSelector: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  starButton: {
-    marginRight: 10,
+  ratingOption: {
+    flex: 1,
+    padding: theme.spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: theme.spacing.xs,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.gray[300],
   },
-  star: {
-    fontSize: 36,
-  },
-  filled: {
-    color: '#FFD700',
-  },
-  empty: {
-    color: '#D3D3D3',
+  ratingLabel: {
+    marginTop: theme.spacing.xs,
+    fontSize: theme.typography.fontSizes.sm,
+    color: theme.colors.text.secondary,
   },
   imageOptions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: theme.spacing.md,
   },
   button: {
-    backgroundColor: '#3498DB',
-    padding: 12,
-    borderRadius: 5,
+    backgroundColor: theme.colors.primary,
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.sm,
     flex: 0.48,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
   },
   buttonIcon: {
-    marginRight: 6,
+    marginRight: theme.spacing.xs,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: theme.colors.white,
+    fontWeight: theme.typography.fontWeights.bold,
   },
   imagePreview: {
     position: 'relative',
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: theme.spacing.md,
   },
   previewImage: {
     width: 200,
     height: 200,
-    borderRadius: 10,
+    borderRadius: theme.borderRadius.md,
   },
   removeImage: {
     position: 'absolute',
     top: -10,
     right: 80,
-    backgroundColor: '#E74C3C',
+    backgroundColor: theme.colors.danger,
     borderRadius: 15,
     width: 30,
     height: 30,
@@ -347,24 +364,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   removeText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+    color: theme.colors.white,
+    fontWeight: theme.typography.fontWeights.bold,
+    fontSize: theme.typography.fontSizes.md,
   },
   submitButton: {
-    backgroundColor: '#2ECC71',
-    padding: 16,
-    borderRadius: 5,
+    backgroundColor: theme.colors.success,
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.sm,
     alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 15,
+    marginTop: theme.spacing.sm,
+    marginBottom: theme.spacing.md,
   },
   deleteButton: {
-    backgroundColor: '#E74C3C',
-    padding: 16,
-    borderRadius: 5,
+    backgroundColor: theme.colors.danger,
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.sm,
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: theme.spacing.xl,
     flexDirection: 'row',
     justifyContent: 'center',
   },
@@ -372,14 +389,14 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   submitButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+    color: theme.colors.white,
+    fontWeight: theme.typography.fontWeights.bold,
+    fontSize: theme.typography.fontSizes.md,
   },
   deleteButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+    color: theme.colors.white,
+    fontWeight: theme.typography.fontWeights.bold,
+    fontSize: theme.typography.fontSizes.md,
   },
 });
 
