@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, ActivityIndicator, RefreshControl } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../AuthContext';
 import { useItems } from '../ItemContext';
 import ItemCard from '../components/ItemCard';
+import Fuse from 'fuse.js';
 
 const HomeScreen = ({ navigation }) => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { items, loading, syncing, syncWithRemote } = useItems();
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+
+  // Setup fuzzy search with Fuse.js
+  const fuse = useMemo(() => {
+    return new Fuse(items, {
+      keys: ['title', 'description'],
+      includeScore: true,
+      threshold: 0.4,
+    });
+  }, [items]);
 
   // Handle manual refresh
   const onRefresh = async () => {
@@ -17,24 +28,34 @@ const HomeScreen = ({ navigation }) => {
     setRefreshing(false);
   };
 
-  // Handle item press - navigate to edit screen
+  // Handle item press - navigate to detail screen
   const handleItemPress = (item) => {
     navigation.navigate('AddItem', { item });
   };
 
-  // Filter items based on search query
-  const filteredItems = items.filter(item => 
-    item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    item.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Get filtered items based on search query using fuzzy search
+  const filteredItems = useMemo(() => {
+    if (!searchQuery) return items;
+    
+    const results = fuse.search(searchQuery);
+    return results.map(result => result.item);
+  }, [fuse, searchQuery, items]);
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>BuddyBuy</Text>
-        {syncing && (
-          <ActivityIndicator size="small" color="#3498DB" />
-        )}
+        <View style={styles.headerRight}>
+          {syncing && (
+            <ActivityIndicator size="small" color="#3498DB" style={styles.syncIndicator} />
+          )}
+          <TouchableOpacity 
+            onPress={() => navigation.navigate('Profile')}
+            style={styles.profileButton}
+          >
+            <Ionicons name="person" size={24} color="#2E86C1" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <TextInput
@@ -95,9 +116,19 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingTop: 50,
   },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  profileButton: {
+    padding: 4,
+  },
+  syncIndicator: {
+    marginRight: 8,
   },
   searchBar: {
     backgroundColor: '#fff',

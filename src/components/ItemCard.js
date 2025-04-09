@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { useItems } from '../ItemContext';
 
 const RatingStars = ({ rating }) => {
   return (
@@ -18,14 +17,6 @@ const RatingStars = ({ rating }) => {
 };
 
 const ItemCard = ({ item, onPress }) => {
-  const { deleteItem } = useItems();
-
-  const handleDelete = (e) => {
-    // Prevent triggering the card press
-    e.stopPropagation();
-    deleteItem(item.id);
-  };
-
   return (
     <TouchableOpacity style={styles.card} onPress={() => onPress(item)} activeOpacity={0.7}>
       {item.imageUri && (
@@ -39,13 +30,6 @@ const ItemCard = ({ item, onPress }) => {
       <View style={styles.content}>
         <View style={styles.titleRow}>
           <Text style={styles.title}>{item.title}</Text>
-          <TouchableOpacity 
-            style={styles.deleteButton} 
-            onPress={handleDelete}
-            hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
-          >
-            <Text style={styles.deleteText}>✕</Text>
-          </TouchableOpacity>
         </View>
         
         <RatingStars rating={item.rating} />
@@ -114,16 +98,6 @@ const styles = StyleSheet.create({
   },
   empty: {
     color: '#D3D3D3',
-  },
-  deleteButton: {
-    padding: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  deleteText: {
-    color: '#E74C3C',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   syncBadge: {
     position: 'absolute',

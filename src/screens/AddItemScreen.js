@@ -11,10 +11,11 @@ import {
   Alert
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from '@expo/vector-icons';
 import { useItems } from '../ItemContext';
 
 const AddItemScreen = ({ navigation, route }) => {
-  const { addItem, updateItem } = useItems();
+  const { addItem, updateItem, deleteItem } = useItems();
   const editItem = route.params?.item;
   
   const [title, setTitle] = useState(editItem?.title || '');
@@ -111,8 +112,47 @@ const AddItemScreen = ({ navigation, route }) => {
     }
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      'Confirm Delete',
+      'Are you sure you want to delete this item?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: async () => {
+            setLoading(true);
+            try {
+              const success = await deleteItem(editItem.id);
+              if (success) {
+                Alert.alert('Success', 'Item deleted successfully!');
+                navigation.goBack();
+              } else {
+                throw new Error('Failed to delete item');
+              }
+            } catch (error) {
+              console.error('Error deleting item:', error);
+              Alert.alert('Error', 'Failed to delete item. Please try again.');
+              setLoading(false);
+            }
+          },
+          style: 'destructive',
+        },
+      ]
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#3498DB" />
+        </View>
+      )}
+      
       <Text style={styles.title}>{isEditing ? 'Edit Item' : 'Add New Item'}</Text>
       
       <View style={styles.formGroup}>
@@ -160,10 +200,12 @@ const AddItemScreen = ({ navigation, route }) => {
         <Text style={styles.label}>Image</Text>
         <View style={styles.imageOptions}>
           <TouchableOpacity onPress={pickImage} style={styles.button}>
-            <Text style={styles.buttonText}>Choose from Library</Text>
+            <Ionicons name="images-outline" size={18} color="#fff" style={styles.buttonIcon} />
+            <Text style={styles.buttonText}>Gallery</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={takePhoto} style={styles.button}>
-            <Text style={styles.buttonText}>Take Photo</Text>
+            <Ionicons name="camera-outline" size={18} color="#fff" style={styles.buttonIcon} />
+            <Text style={styles.buttonText}>Camera</Text>
           </TouchableOpacity>
         </View>
         
@@ -185,14 +227,21 @@ const AddItemScreen = ({ navigation, route }) => {
         onPress={handleSubmit}
         disabled={loading}
       >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.submitButtonText}>
-            {isEditing ? 'Update Item' : 'Add Item'}
-          </Text>
-        )}
+        <Text style={styles.submitButtonText}>
+          {isEditing ? 'Update Item' : 'Add Item'}
+        </Text>
       </TouchableOpacity>
+
+      {isEditing && (
+        <TouchableOpacity 
+          style={[styles.deleteButton, loading && styles.disabledButton]}
+          onPress={handleDelete}
+          disabled={loading}
+        >
+          <Ionicons name="trash-outline" size={18} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.deleteButtonText}>Delete Item</Text>
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 };
@@ -202,6 +251,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#f5f5f5',
+  },
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
   },
   title: {
     fontSize: 24,
@@ -255,6 +315,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     flex: 0.48,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  buttonIcon: {
+    marginRight: 6,
   },
   buttonText: {
     color: '#fff',
@@ -292,12 +357,26 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     marginTop: 10,
+    marginBottom: 15,
+  },
+  deleteButton: {
+    backgroundColor: '#E74C3C',
+    padding: 16,
+    borderRadius: 5,
+    alignItems: 'center',
     marginBottom: 30,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   disabledButton: {
     opacity: 0.6,
   },
   submitButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  deleteButtonText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
