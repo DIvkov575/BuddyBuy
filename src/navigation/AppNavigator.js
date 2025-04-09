@@ -8,7 +8,6 @@ import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import ItemsScreen from '../screens/ItemsScreen';
 import AddItemScreen from '../screens/AddItemScreen';
 
 const Stack = createNativeStackNavigator();
@@ -30,19 +29,21 @@ const AppNavigator = () => {
             <Stack.Screen 
               name="Home" 
               component={HomeScreen} 
-              options={{ title: 'BuddyBuy' }}
+              options={{ 
+                title: 'BuddyBuy',
+                headerShown: false
+              }}
             />
             <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen 
-              name="Items" 
-              component={ItemsScreen} 
-              options={{ title: 'My Items' }}
-            />
             <Stack.Screen 
               name="AddItem" 
               component={AddItemScreen} 
               options={({ route }) => ({ 
-                title: route.params?.item ? 'Edit Item' : 'Add New Item' 
+                title: route.params?.item ? 'Edit Item' : 'Add New Item',
+                headerStyle: {
+                  backgroundColor: '#2E86C1',
+                },
+                headerTintColor: '#fff',
               })}
             />
           </>

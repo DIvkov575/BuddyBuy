@@ -20,12 +20,14 @@ const RatingStars = ({ rating }) => {
 const ItemCard = ({ item, onPress }) => {
   const { deleteItem } = useItems();
 
-  const handleDelete = () => {
+  const handleDelete = (e) => {
+    // Prevent triggering the card press
+    e.stopPropagation();
     deleteItem(item.id);
   };
 
   return (
-    <TouchableOpacity style={styles.card} onPress={() => onPress(item)}>
+    <TouchableOpacity style={styles.card} onPress={() => onPress(item)} activeOpacity={0.7}>
       {item.imageUri && (
         <Image 
           source={{ uri: item.imageUri }} 
@@ -35,7 +37,17 @@ const ItemCard = ({ item, onPress }) => {
       )}
       
       <View style={styles.content}>
-        <Text style={styles.title}>{item.title}</Text>
+        <View style={styles.titleRow}>
+          <Text style={styles.title}>{item.title}</Text>
+          <TouchableOpacity 
+            style={styles.deleteButton} 
+            onPress={handleDelete}
+            hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+          >
+            <Text style={styles.deleteText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+        
         <RatingStars rating={item.rating} />
         
         <Text style={styles.description} numberOfLines={2}>
@@ -48,10 +60,6 @@ const ItemCard = ({ item, onPress }) => {
           </View>
         )}
       </View>
-      
-      <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-        <Text style={styles.deleteText}>✕</Text>
-      </TouchableOpacity>
     </TouchableOpacity>
   );
 };
@@ -60,7 +68,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -77,10 +85,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 12,
   },
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 4,
+    flex: 1,
+    marginRight: 8,
   },
   description: {
     fontSize: 14,
@@ -101,7 +116,7 @@ const styles = StyleSheet.create({
     color: '#D3D3D3',
   },
   deleteButton: {
-    padding: 12,
+    padding: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
