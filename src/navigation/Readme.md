@@ -8,11 +8,20 @@ Start expo with: ```npm run web```
 
 
 ---
-Todo:
-- add gradient background
+**Todo**\
+Dima:
 - auto reload on "add new item"
 - support for multiple images
-- reorder item title/image (title/rating on left, image on right) (info continuity)
 - Image search
 - Title autodetect from image
+
+- release on app store
+- update supabase templates
+
+Erik?:
+- reorder item title/image (title/rating on left, image on right) (info continuity)
+- change name to "purchase buddy"?
+- add logo/icons
+- add favicon?
 - react-native.Alert.alert for web (for testing)
+- add gradient background
