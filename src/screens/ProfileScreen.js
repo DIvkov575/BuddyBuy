@@ -73,7 +73,7 @@ const ProfileScreen = ({ navigation }) => {
       )}
       
       <View style={styles.header}>
-        <Ionicons name="person-circle" size={80} color={theme.colors.primary} />
+        {/*<Ionicons name="person-circle" size={80} color={theme.colors.primary} />*/}
         <Text style={styles.title}>Profile</Text>
       </View>
       

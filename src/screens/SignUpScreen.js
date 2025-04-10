@@ -38,6 +38,8 @@ const SignUpScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.centeringContainer}>
+      <View style={styles.centeredContainer}>
       <Text style={styles.title}>Create Account</Text>
       
       <TextInput
@@ -84,6 +86,8 @@ const SignUpScreen = ({ navigation }) => {
         <Text style={styles.link}>Already have an account? Sign In</Text>
       </TouchableOpacity>
     </View>
+</View>
+</View>
   );
 };
 
@@ -92,6 +96,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
+  },
+  centeringContainer: {
+    display: "flex",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: 'Center',
+    alignItems: "Center"
+  },
+  centeredContainer: {
+    maxWidth: 800,
+    flex: 1,
   },
   title: {
     fontSize: 24,

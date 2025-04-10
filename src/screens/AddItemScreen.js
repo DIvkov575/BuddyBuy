@@ -187,97 +187,109 @@ const AddItemScreen = ({ navigation, route }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {loading && (
-        <View style={theme.commonStyles.loadingOverlay}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-        </View>
-      )}
-      
-      <Text style={styles.title}>{isEditing ? 'Edit Item' : 'Add New Item'}</Text>
-      
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Title</Text>
-        <TextInput
-          style={styles.input}
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Enter item title"
-        />
-      </View>
-      
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Description</Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          value={description}
-          onChangeText={setDescription}
-          placeholder="Enter item description"
-          multiline
-          numberOfLines={4}
-        />
-      </View>
-      
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Rating</Text>
-        <RatingSelector rating={rating} setRating={setRating} />
-      </View>
-      
-      <View style={styles.formGroup}>
-        <Text style={styles.label}>Image</Text>
-        <View style={styles.imageOptions}>
-          <TouchableOpacity onPress={pickImage} style={styles.button}>
-            <Ionicons name="images-outline" size={18} color={theme.colors.white} style={styles.buttonIcon} />
-            <Text style={styles.buttonText}>Gallery</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={takePhoto} style={styles.button}>
-            <Ionicons name="camera-outline" size={18} color={theme.colors.white} style={styles.buttonIcon} />
-            <Text style={styles.buttonText}>Camera</Text>
-          </TouchableOpacity>
-        </View>
-        
-        {imageUri && (
-          <View style={styles.imagePreview}>
-            <Image source={{ uri: imageUri }} style={styles.previewImage} />
-            <TouchableOpacity
-              style={styles.removeImage}
-              onPress={() => setImageUri(null)}
-            >
-              <Text style={styles.removeText}>✕</Text>
-            </TouchableOpacity>
+    <ScrollView style={styles.scrollViewContainer}>
+      <View style={styles.outerContainer}>
+        <View style={styles.innerContainer}>
+        {loading && (
+          <View style={theme.commonStyles.loadingOverlay}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
           </View>
         )}
-      </View>
-      
-      <TouchableOpacity 
-        style={[styles.submitButton, loading && styles.disabledButton]}
-        onPress={handleSubmit}
-        disabled={loading}
-      >
-        <Text style={styles.submitButtonText}>
-          {isEditing ? 'Update Item' : 'Add Item'}
-        </Text>
-      </TouchableOpacity>
 
-      {isEditing && (
-        <TouchableOpacity 
-          style={[styles.deleteButton, loading && styles.disabledButton]}
-          onPress={handleDelete}
+        <Text style={styles.title}>{isEditing ? 'Preview' : 'Add New Item'}</Text>
+
+        <View style={styles.formGroup}>
+          <TextInput
+            style={styles.input}
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Title"
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            value={description}
+            onChangeText={setDescription}
+            placeholder="Description"
+            multiline
+            numberOfLines={4}
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Rating</Text>
+          <RatingSelector rating={rating} setRating={setRating} />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Image</Text>
+          <View style={styles.imageOptions}>
+            <TouchableOpacity onPress={pickImage} style={styles.button}>
+              <Ionicons name="images-outline" size={18} color={theme.colors.white} style={styles.buttonIcon} />
+              <Text style={styles.buttonText}>Gallery</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={takePhoto} style={styles.button}>
+              <Ionicons name="camera-outline" size={18} color={theme.colors.white} style={styles.buttonIcon} />
+              <Text style={styles.buttonText}>Camera</Text>
+            </TouchableOpacity>
+          </View>
+
+          {imageUri && (
+            <View style={styles.imagePreview}>
+              <Image source={{ uri: imageUri }} style={styles.previewImage} />
+              <TouchableOpacity
+                style={styles.removeImage}
+                onPress={() => setImageUri(null)}
+              >
+                <Text style={styles.removeText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        <TouchableOpacity
+          style={[styles.submitButton, loading && styles.disabledButton]}
+          onPress={handleSubmit}
           disabled={loading}
         >
-          <Ionicons name="trash-outline" size={18} color={theme.colors.white} style={styles.buttonIcon} />
-          <Text style={styles.deleteButtonText}>Delete Item</Text>
+          <Text style={styles.submitButtonText}>
+            {isEditing ? 'Save Changes' : 'Add Item'}
+          </Text>
         </TouchableOpacity>
-      )}
+
+        {isEditing && (
+          <TouchableOpacity
+            style={[styles.deleteButton, loading && styles.disabledButton]}
+            onPress={handleDelete}
+            disabled={loading}
+          >
+            <Ionicons name="trash-outline" size={18} color={theme.colors.white} style={styles.buttonIcon} />
+            <Text style={styles.deleteButtonText}>Delete Item</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  scrollViewContainer: {
     flex: 1,
     padding: theme.spacing.md,
     backgroundColor: theme.colors.background.primary,
+  },
+  outerContainer: {
+    display: "flex",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: 'Center'
+  },
+  innerContainer: {
+    maxWidth: 800,
+    flex: 1,
   },
   title: {
     fontSize: theme.typography.fontSizes.xxl,

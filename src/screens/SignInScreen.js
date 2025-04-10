@@ -27,6 +27,8 @@ const SignInScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.centeringContainer}>
+      <View style={styles.centeredContainer}>
       <Text style={styles.title}>Welcome Back</Text>
       
       <TextInput
@@ -65,6 +67,8 @@ const SignInScreen = ({ navigation }) => {
         <Text style={styles.link}>Don't have an account? Sign Up</Text>
       </TouchableOpacity>
     </View>
+    </View>
+    </View>
   );
 };
 
@@ -73,6 +77,27 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
+  },
+  centeringContainer: {
+    display: "flex",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: 'Center',
+    alignItems: "Center"
+  },
+  centeredContainer: {
+    maxWidth: 800,
+    flex: 1,
+  },
+  outerContainer: {
+    display: "flex",
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: 'Center'
+  },
+  innerContainer: {
+    maxWidth: 800,
+    flex: 1,
   },
   title: {
     fontSize: 24,

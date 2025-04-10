@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: theme.borderRadius.round,
-    backgroundColor: theme.colors.success,
+    backgroundColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     ...theme.shadows.medium,

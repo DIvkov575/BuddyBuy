@@ -44,7 +44,7 @@ const AppNavigator = () => {
                 headerStyle: {
                   backgroundColor: colors.background.primary
                 },
-                headerTintColor: colors.background.card,
+                headerTintColor: colors.text.primary
               })}
             />
           </>
